@@ -1,0 +1,3 @@
+wtforms
+flask
+flask-mysqldb

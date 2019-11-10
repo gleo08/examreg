@@ -1,3 +1,2 @@
-wtforms
 flask
 flask-mysqldb

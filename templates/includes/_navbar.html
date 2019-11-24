@@ -15,8 +15,16 @@
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="/login">Login</a></li>
+            {% if session.logged_in %}
+              {% if session.logged_in0 %}
+                <li><a href="/admin">Admin</a></li>
+              {% endif %}
+              {% if session.logged_in1 %}
+                <li><a href="/student">Student</a> </li>
+              {% endif %}
+              <li><a href="/logout">Logout</a></li>
+            {% endif %}
           </ul> 
-        </div><!--/.nav-collapse -->
+        </div>
       </div>
     </nav>

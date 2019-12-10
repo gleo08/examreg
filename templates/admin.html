@@ -3,11 +3,6 @@
 {% block body %}
 	<h1>Admin <small>Welcome {{session.username}}</small></h1>
 
-<form method="POST" action="/upload" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="inputFile">FileInput</label>
-        <input type="file" name="inputFile">
-    </div>
-        <button type="submit" class="btn btn-default" name="submit">Import</button>
-    </form>
+
+
 {% endblock %}

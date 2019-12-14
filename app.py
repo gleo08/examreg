@@ -3,19 +3,23 @@ from flask_mysqldb import MySQL
 import json
 import pandas as pd
 from functools import wraps
+from config import config
 
 app = Flask(__name__)
-app.secret_key = 'secret123'
+
+app.secret_key = config.app_secret_key
 
 # Config MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = '12345678'
-app.config['MYSQL_DB'] = 'examreg'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+app.config['MYSQL_HOST'] = config.mysql_host
+app.config['MYSQL_USER'] = config.mysql_user
+app.config['MYSQL_PASSWORD'] = config.mysql_pass
+app.config['MYSQL_DB'] = config.mysql_db
+app.config['MYSQL_CURSORCLASS'] = config.mysql_cursor_class
 # init MYSQL
 mysql = MySQL(app)
-#mysql.connection.autocommit(on=True)
+
+# mysql.connection.autocommit(on=True)
+
 
 @app.route('/')
 def index():
@@ -192,6 +196,7 @@ def addTiming():
 
     cur.close()
 
+
 @app.route('/getListOfRoom', methods=['GET'])
 def getListofRoom():
     cur = mysql.connection.cursor()
@@ -202,6 +207,20 @@ def getListofRoom():
     for r in rv:
         result.append(dict(zip(row_headers, r)))
     return json.dump(result)
+
+
+@app.route('/rooms', methods=['POST'])
+def create_room():
+    if request.method == 'POST':
+        data = request.get_json()
+        name, slots = data['name'], data['slots']
+
+        mysql.connection.autocommit(on=True)
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO rooms (name, slots) VALUES(%s, %s)",
+                    (name, slots))
+        cur.close()
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 if __name__ == '__main__':

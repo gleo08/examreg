@@ -203,7 +203,6 @@ def upload2():
     flash('Import Success', 'success')
     return redirect(url_for('admin'))
 
-@app.route('/')
 
 @app.route('/information', methods=['GET'])
 def information():
@@ -380,6 +379,7 @@ def deleteRegistered():
     cur.close()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
+
 @app.route('/test1', methods=["GET"])
 def test1():
     cur = mysql.connection.cursor()
@@ -387,8 +387,6 @@ def test1():
     rv = cur.fetchall()
     result = json.dumps(rv)
     return result
-
-
 
 
 if __name__ == '__main__':

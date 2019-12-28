@@ -2,4 +2,289 @@
 
 {% block body %}
 	<h1>Student <small>Welcome {{session.username}}</small></h1>
+
+	<ul class="nav nav-tabs">
+		<li class="active"><a data-toggle="tab" href="#info">Information of Subjects</a></li>
+  		<li><a data-toggle="tab" href="#reg">Exam Registration</a></li>
+  		<li><a data-toggle="tab" href="#result">Result</a></li>
+	</ul>
+
+	<div class="tab-content">
+		<div id="info" class="tab-pane fade in active">
+<!-- BEGIN INFORMATION -->
+			<h2>Your Subjects</h2>
+				<table id="tb1" class="table table-hover">
+					<thead class="thead-dark">
+    					<tr>
+        					<th scope="col">#</th>
+        					<th scope="col">Subject Name</th>
+							<th scope="col">Subject Code</th>
+							<th scope="col">Status</th>
+    					</tr>
+					</thead>
+						<tbody id="tdata1">
+
+						</tbody>
+				</table>
+		</div>
+<!-- END INFORMATION -->
+  		<div id="reg" class="tab-pane fade">
+<!-- BEGIN REGISTRATION -->
+    		<h2>Exam Registration</h2>
+			<div>
+  				<label for="sel1">Select subject:</label>
+  				<select class="form-control" id="sel1">
+  				</select>
+			</div>
+			<br>
+			<div>
+  				<label for="sel2">Select Shift:</label>
+  				<select class="form-control" id="sel2">
+					<option>Choose</option>
+  				</select>
+			</div>
+			<br>
+			<div>
+  				<label for="sel3">Select Room:</label>
+  				<select class="form-control" id="sel3">
+					<option>Choose</option>
+  				</select>
+			</div>
+			<br>
+			<div>
+				<button type="button" name="submit" id="submit" class="btn btn-primary">Submit</button>
+			</div>
+  		</div>
+<!-- END REGISTRATION -->
+
+<!-- BEGIN RESULT -->
+  		<div id="result" class="tab-pane fade">
+    		<h2>Result</h2>
+				<table id="tb2" class="table table-hover">
+					<thead class="thead-dark">
+    					<tr>
+        					<th>#</th>
+        					<th>Subject Name</th>
+							<th>Subject Code</th>
+							<th>Shift</th>
+							<th>Begin Time</th>
+							<th>End Time</th>
+							<th>Room</th>
+							<th>Action</th>
+    					</tr>
+					</thead>
+						<tbody id="tdata2">
+
+						</tbody>
+				</table>
+			<br>
+			<div>
+				<button type="button" name="save" id="save" class="btn btn-success">Save</button>
+			</div>
+  		</div>
+	</div>
+<!-- END RESULT -->
+
+	<script>
+		$(document).ready(function(){
+				$.get("http://127.0.0.1:5000/yourSubjects", function(data, status){
+					var data = JSON.parse(data);
+					var count = 1;
+					data.forEach(function(dt){
+						if (dt.is_approved == 1){
+							$("#tdata1").append("<tr>"+
+							"<td>"+count+"</td>"+
+							"<td>"+dt.name+"</td>"+
+							"<td>"+dt.code+"</td>"+
+							"<td>"+"Allowed"+"</td>"+
+							+"</tr>"
+							);
+						} else {
+							$("#tdata1").append("<tr>"+
+							"<td>"+count+"</td>"+
+							"<td>"+dt.name+"</td>"+
+							"<td>"+dt.code+"</td>"+
+							"<td>"+"Not Allowed"+"</td>"+
+							+"</tr>"
+							);
+						}
+						count++;
+					});
+				});
+		});
+	</script>
+
+
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$.get("http://127.0.0.1:5000/yourSubjects", function(data, status){
+				var data = JSON.parse(data);
+				data.forEach(function(dt){
+					txt += "<option id='subject' value='"+dt.id+"'>"+dt.code+"</option>";
+				});
+				$("#sel1").html(txt);
+			});
+		});
+	</script>
+
+
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$("#sel1").change(function(){
+				var k = $("#sel1").val();
+				$.get("http://127.0.0.1:5000/timingOfSubject", function(data, status){
+					var data = JSON.parse(data);
+					data.forEach(function(dt){
+						if (k == dt.subject_id){
+							txt += "<option id='shift' value='"+dt.id+"'>"+dt.name+"("+dt.begin_time+" to "+dt.end_time+")"+"</option>";
+						};
+					});
+					$("#sel2").html(txt);
+				});
+			});
+		});
+	</script>
+
+
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$("#sel1").change(function(){
+				var i = $("#sel1").val();
+				$("#sel2").change(function(){
+					var j = $("#sel2").val();
+					$.get("http://127.0.0.1:5000/roomOfTimingSubject", function(data, status){
+						var data = JSON.parse(data);
+						data.forEach(function(dt){
+							if (i == dt.subject_id && j == dt.timing_id){
+								txt += "<option id='room' value='"+dt.id+"'>"+dt.name+"</option>";
+							};
+						});
+						$("#sel3").html(txt);
+					});
+				});
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$("#submit").click(function(){
+				var i = $("#sel1").val();
+				var j = $("#sel2").val();
+				var k = $("#sel3").val();
+				if(i == -1){
+					alert("Please choose subject");
+				}
+				else if(j == -1){
+					alert("Please choose shift");
+				}
+				else if(k == -1){
+					alert("Please choose subject");
+				}
+				else {
+					alert("Success, Please check your result");
+					$("#sel1").html(txt);
+					$("#sel2").html(txt);
+					$("#sel3").html(txt);
+					var data =
+						{
+							subject_id: i,
+							timing_id: j,
+							room_id: k
+						};
+					var respone = JSON.stringify(data);
+					console.log(respone);
+
+					$.ajax({
+            			type: "POST",
+            			contentType: "application/json",
+            			url: "http://127.0.0.1:5000/registed",
+            			dataType: "json",
+            			data: respone,
+            			success: function (data) {
+               				console.log("Success");
+            			},
+            			error: function () {
+             				console.log("Error");
+            			}
+        			});
+        			location.reload();
+				}
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+			$.get("http://127.0.0.1:5000/getRegisted", function(data, status){
+				var data = JSON.parse(data);
+				console.log(data);
+				var count = 1;
+				var txt ="";
+					data.forEach(function(dt){
+						txt += "<tr><td>"+count+"</td><td>"+dt.name+"</td><td>"+dt.code+"</td><td>"+dt.tname+"</td><td>"+dt.begin_time+"</td><td>"+dt.end_time+"</td><td>"+dt.rname+"</td><td><button class='btn btn-danger' onclick='deleteRegistered("+dt.id+")' value='"+dt.id+"'>"+"Delete"+"</button></td></tr>";
+						count++;
+					});
+				$("#tdata2").html(txt);
+			});
+		});
+	</script>
+
+<!--	<script>
+		$(document).ready(function(){
+			$("#tdata2").change(function(){
+				$("#del").click(function(){
+					var test = $("#del").val();
+					console.log(test);
+					var data =
+					{
+						id: i
+					}
+					respone = JSON.stringify(data);
+					console.log(respone);
+					$.ajax({
+            			type: "POST",
+            			contentType: "application/json",
+            			url: "http://127.0.0.1:5000/deleteRegistered",
+            			dataType: "json",
+            			data: respone,
+            			success: function (data) {
+               				console.log("Success");
+            			},
+            			error: function () {
+             				console.log("Error");
+            			}
+        			});
+        		});
+        	});
+		});
+	</script>
+-->
+	<script>
+		function deleteRegistered(id) {
+			var data = {
+				id: id
+			}
+			var req = JSON.stringify(data)
+			$.ajax({
+            			type: "POST",
+            			contentType: "application/json",
+            			url: "http://127.0.0.1:5000/deleteRegistered",
+            			dataType: "json",
+            			data: req,
+            			success: function (data) {
+               				console.log("Success");
+            			},
+            			error: function () {
+             				console.log("Error");
+            			}
+        			});
+        	location.reload();
+		}
+	</script>
+
 {% endblock %}

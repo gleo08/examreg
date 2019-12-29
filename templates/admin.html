@@ -3,45 +3,4 @@
 {% block body %}
 	<h1>Admin <small>Welcome {{ session.username }}</small></h1>
 
-	<ul class="nav nav-tabs">
-		<li class="active"><a data-toggle="tab" href="#info">Information of Subjects</a></li>
-  		<li><a data-toggle="tab" href="#reg">Exam Registration</a></li>
-  		<li><a data-toggle="tab" href="#result">Result</a></li>
-	</ul>
-
-	<script>
-		$(document).ready(function(){
-			$("#btn").click(function() {
-				$.get("http://127.0.0.1:5000/test", function(data, status){
-					var data = JSON.parse(data);
-
-					data.forEach(function(dt){
-						$("#tdata").append("<tr>"+
-						"<td>"+dt.id+"</td>"+
-						"<td>"+dt.user_name+"</td>"+
-						"<td>"+dt.pass+"</td>"+
-						"<td>"+dt.name+"</td>"+
-						"<td>"+dt.role_id+"</td>"
-						+"</tr>"
-						);
-					});
-					$("#form").removeClass("tttt");
-				});
-			});
-		});
-	</script>
-	<script>
-		$(document).ready(function(){
-			var txt = "";
-			$.get("http://127.0.0.1:5000/test1", function(data, status){
-				var data = JSON.parse(data);
-				data.forEach(function(dt){
-					console.log(dt.id);
-					txt += "<option value='"+dt.id+"'>"+dt.name+"</option>";
-				});
-				$("#sel").append(txt);
-			});
-		});
-	</script>
-
 {% endblock %}

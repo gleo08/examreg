@@ -198,44 +198,41 @@ def upload2():
     r = pd.read_csv(f, sep=',')
     for it in r.iterows():
         cur.execute('INSERT INTO subjects_students(student_id, subject_id, contest_id, is_approved) VALUES(%s, %s, %s, %s)', it[1])
-
     cur.close()
     flash('Import Success', 'success')
     return redirect(url_for('admin'))
 
 
-@app.route('/information', methods=['GET'])
-def information():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT users.id, users.name, users.user_name, s.name, s.code, ss.is_approved FROM users INNER JOIN students_subjects ss ON users.id = ss.student_id INNER JOIN subjects s ON s.id = ss.subject_id WHERE users.role_id = 2 ORDER BY users.id ASC')
-    row_headers = [x[0] for x in cur.description]
-    rv = cur.fetchall()
-    result = []
-    for r in rv:
-        result.append(dict(zip(row_headers, r)))
-    return json.dumps(result)
+# @app.route('/information', methods=['GET'])
+# def information():
+#     cur = mysql.connection.cursor()
+#     cur.execute('SELECT users.id, users.name, users.user_name, s.name, s.code, ss.is_approved FROM users INNER JOIN students_subjects ss ON users.id = ss.student_id INNER JOIN subjects s ON s.id = ss.subject_id WHERE users.role_id = 2 ORDER BY users.id ASC')
+#     row_headers = [x[0] for x in cur.description]
+#     rv = cur.fetchall()
+#     result = []
+#     for r in rv:
+#         result.append(dict(zip(row_headers, r)))
+#     return json.dumps(result)
 
 
 @app.route('/makeContest', methods=['POST'])
 def makeContest():
     mysql.connection.autocommit(on=True)
-    if request.method == 'POST':
-        nameContest = request.form['namecontest']
+    data = request.json()
+    nameContest = data['namecontest']
     cur = mysql.connection.cursor()
     cur.execute('INSERT INTO contest(name) VALUES (%s)', [nameContest])
-
     cur.close()
-    return flash('Success', 'success')
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/addTiming', methods=['POST'])
 def addTiming():
     mysql.connection.autocommit(on=True)
-    if request.method == 'POST':
-        data = request.json()
-        name = data['name']
-        begin_time = data['begin_time']
-        end_time = data['end_time']
+    data = request.json()
+    name = data['name']
+    begin_time = data['begin_time']
+    end_time = data['end_time']
     cur = mysql.connection.cursor()
     cur.execute('INSERT INTO timing(name, begin_time, end_time) VALUES (%s, %s, %s)', [name, begin_time, end_time])
     cur.close()

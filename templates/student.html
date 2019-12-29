@@ -190,13 +190,13 @@
 					$("#sel1").html(txt);
 					$("#sel2").html(txt);
 					$("#sel3").html(txt);
-					var data =
+					var data1 =
 						{
 							subject_id: i,
 							timing_id: j,
 							room_id: k
 						};
-					var respone = JSON.stringify(data);
+					var respone = JSON.stringify(data1);
 					console.log(respone);
 
 					$.ajax({
@@ -212,6 +212,7 @@
              				console.log("Error");
             			}
         			});
+
         			location.reload();
 				}
 			});
@@ -282,7 +283,7 @@
             			error: function () {
              				console.log("Error");
             			}
-        			});
+        	});
         	location.reload();
 		}
 	</script>

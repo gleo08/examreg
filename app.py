@@ -302,6 +302,7 @@ def roomOfTimingSubject():
     result = json.dumps(rv)
     return result
 
+
 @app.route('/yourSubjects', methods=['GET'])
 def yourSubjects():
     index = session['id']
@@ -330,16 +331,34 @@ def yourRegisted():
 @app.route('/registed', methods=['POST'])
 def registed():
     index = session['id']
+    cur = mysql.connection.cursor()
     mysql.connection.autocommit(on=True)
     data = request.get_json(force=True)
-    cur = mysql.connection.cursor()
-    tid = data['timing_id']
-    rid = data['room_id']
-    subid = data['subject_id']
-    cur.execute('SELECT tr.id FROM timing_room AS tr  WHERE tr.timing_id = %s AND tr.room_id = %s AND tr.subject_id = %s ',[tid, rid, subid])
-    rv = cur.fetchone()
-    cur.execute('INSERT INTO registered(student_id, timing_room_id) VALUE(%s, %s)', [index, rv['id']])
-    cur.close()
+    timingId = data['timing_id']
+    roomId = data['room_id']
+    subjectId = data['subject_id']
+    #GET timing_room_id:
+    cur1 = mysql.connection.cursor()
+    cur1.execute('SELECT tr.id FROM timing_room AS tr  WHERE tr.timing_id = %s AND tr.room_id = %s AND tr.subject_id = %s ',[timingId, roomId, subjectId])
+    rv1 = cur1.fetchone()
+    i = rv1['id']
+    #GET number of registed:
+    cur2 = mysql.connection.cursor()
+    cur2.execute('SELECT COUNT(*) as s FROM registered AS reg INNER JOIN timing_room AS tr ON reg.timing_room_id = tr.id WHERE tr.id = %s', [i])
+    rv2 = cur2.fetchone()
+    j = rv2['s']
+    #GET slots of room:
+    cur3 = mysql.connection.cursor()
+    cur3.execute('SELECT r.slots FROM rooms AS r WHERE r.id = %s', [roomId])
+    rv3 = cur3.fetchone()
+    k = rv3['slots']
+    #Registetration:
+    if k > j:
+        cur.execute('INSERT INTO registered(student_id, timing_room_id) VALUE(%s, %s)', [index, i])
+        cur.close()
+        cur1.close()
+        cur2.close()
+        cur3.close()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 

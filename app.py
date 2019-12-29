@@ -356,14 +356,16 @@ def registed():
         cur1.close()
         cur2.close()
         cur3.close()
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else :
+        return json.dumps({'success': False}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/getRegisted', methods=['GET'])
 def getRegisted():
     index = session['id']
     cur = mysql.connection.cursor()
-    cur.execute('SELECT s.name, s.code, t.name AS tname, t.begin_time, t.end_time, r.name AS rname, reg.id FROM registered AS reg INNER JOIN timing_room AS tr ON reg.timing_room_id = tr.id INNER JOIN timing AS t ON tr.timing_id = t.id INNER JOIN rooms AS r ON tr.room_id = r.id INNER JOIN subjects s ON tr.subject_id = s.id WHERE reg.student_id = %s', [index])
+    cur.execute('SELECT s.name, s.code, t.date, t.name AS tname, t.begin_time, t.end_time, r.name AS rname, reg.id FROM registered AS reg INNER JOIN timing_room AS tr ON reg.timing_room_id = tr.id INNER JOIN timing AS t ON tr.timing_id = t.id INNER JOIN rooms AS r ON tr.room_id = r.id INNER JOIN subjects s ON tr.subject_id = s.id WHERE reg.student_id = %s', [index])
     rv = cur.fetchall()
     result = json.dumps(rv)
     return result

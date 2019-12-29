@@ -66,6 +66,7 @@
         					<th>#</th>
         					<th>Subject Name</th>
 							<th>Subject Code</th>
+							<th>Date</th>
 							<th>Shift</th>
 							<th>Begin Time</th>
 							<th>End Time</th>
@@ -186,7 +187,6 @@
 					alert("Please choose room");
 				}
 				else {
-					alert("Success, Please check your result");
 					$("#sel1").html(txt);
 					$("#sel2").html(txt);
 					$("#sel3").html(txt);
@@ -205,8 +205,13 @@
             			url: "http://127.0.0.1:5000/registed",
             			dataType: "json",
             			data: respone,
-            			success: function (data) {
-               				console.log("Success");
+            			success: function (response) {
+               				if (response.success){
+               					alert("Success, Please check your result");
+               				}
+               				else{
+               					alert("Register fail, room is full");
+               				}
             			},
             			error: function () {
              				console.log("Error");
@@ -223,11 +228,10 @@
 		$(document).ready(function(){
 			$.get("http://127.0.0.1:5000/getRegisted", function(data, status){
 				var data = JSON.parse(data);
-				console.log(data);
 				var count = 1;
 				var txt ="";
 					data.forEach(function(dt){
-						txt += "<tr><td>"+count+"</td><td>"+dt.name+"</td><td>"+dt.code+"</td><td>"+dt.tname+"</td><td>"+dt.begin_time+"</td><td>"+dt.end_time+"</td><td>"+dt.rname+"</td><td><button class='btn btn-danger' onclick='deleteRegistered("+dt.id+")' value='"+dt.id+"'>"+"Delete"+"</button></td></tr>";
+						txt += "<tr><td>"+count+"</td><td>"+dt.name+"</td><td>"+dt.code+"</td><td>"+dt.date+"</td><td>"+dt.tname+"</td><td>"+dt.begin_time+"</td><td>"+dt.end_time+"</td><td>"+dt.rname+"</td><td><button class='btn btn-danger' onclick='deleteRegistered("+dt.id+")' value='"+dt.id+"'>"+"Delete"+"</button></td></tr>";
 						count++;
 					});
 				$("#tdata2").html(txt);
@@ -235,36 +239,6 @@
 		});
 	</script>
 
-<!--	<script>
-		$(document).ready(function(){
-			$("#tdata2").change(function(){
-				$("#del").click(function(){
-					var test = $("#del").val();
-					console.log(test);
-					var data =
-					{
-						id: i
-					}
-					respone = JSON.stringify(data);
-					console.log(respone);
-					$.ajax({
-            			type: "POST",
-            			contentType: "application/json",
-            			url: "http://127.0.0.1:5000/deleteRegistered",
-            			dataType: "json",
-            			data: respone,
-            			success: function (data) {
-               				console.log("Success");
-            			},
-            			error: function () {
-             				console.log("Error");
-            			}
-        			});
-        		});
-        	});
-		});
-	</script>
--->
 	<script>
 		function deleteRegistered(id) {
 			var data = {
@@ -288,4 +262,16 @@
 		}
 	</script>
 
+	<script>
+    	$(document).ready(function() {
+        	$('#save').click(function() {
+            	console.log('print');
+            	var printContents = $('#tb2').html();
+            	var originalContents = $('body').html();
+            	$('body').html(printContents);
+            	window.print();
+            	$('body').html(originalContents);
+        	});
+    	});
+	</script>
 {% endblock %}

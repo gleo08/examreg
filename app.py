@@ -203,18 +203,6 @@ def upload2():
     return redirect(url_for('admin'))
 
 
-# @app.route('/information', methods=['GET'])
-# def information():
-#     cur = mysql.connection.cursor()
-#     cur.execute('SELECT users.id, users.name, users.user_name, s.name, s.code, ss.is_approved FROM users INNER JOIN students_subjects ss ON users.id = ss.student_id INNER JOIN subjects s ON s.id = ss.subject_id WHERE users.role_id = 2 ORDER BY users.id ASC')
-#     row_headers = [x[0] for x in cur.description]
-#     rv = cur.fetchall()
-#     result = []
-#     for r in rv:
-#         result.append(dict(zip(row_headers, r)))
-#     return json.dumps(result)
-
-
 @app.route('/makeContest', methods=['POST'])
 def makeContest():
     mysql.connection.autocommit(on=True)
@@ -254,28 +242,30 @@ def addRoom():
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
-@app.route('/getListOfRoom', methods=['GET'])
-def getListOfRoom():
+@app.route('/getListOfRooms', methods=['GET'])
+def getListOfRooms():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM room')
-    row_headers = [x[0] for x in cur.description]
+    cur.execute('SELECT * FROM rooms')
+    #row_headers = [x[0] for x in cur.description]
     rv = cur.fetchall()
-    result = []
-    for r in rv:
-        result.append(dict(zip(row_headers, r)))
-    return json.dumps(result)
+    #result = []
+    #for r in rv:
+        #result.append(dict(zip(row_headers, r)))
+    result = json.dumps(rv)
+    return result
 
 
 @app.route('/getListOfTiming', methods=['GET'])
 def getListOfTiming():
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM timing')
-    row_headers = [x[0] for x in cur.description]
+    #row_headers = [x[0] for x in cur.description]
     rv = cur.fetchall()
-    result = []
-    for r in rv:
-        result.append(dict(zip(row_headers, r)))
-    return json.dumps(result)
+    #result = []
+    #for r in rv:
+        #result.append(dict(zip(row_headers, r)))
+    result = json.dumps(rv)
+    return result
 
 
 @app.route('/timingOfSubject', methods=['GET'])
@@ -313,17 +303,6 @@ def yourSubjects():
     result = json.dumps(rv)
     return result
 
-@app.route('/yourRegisted', methods=['GET'])
-def yourRegisted():
-    index = session['id']
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT s.code, s.name, t.name, t.begin_time, t.end_time, r.name FROM registered AS reg INNER JOIN timing_room AS tr ON reg.timing_room_id = tr.id INNER JOIN subjects AS s ON tr.subject_id = s.id INNER JOIN timing AS t ON tr.timing_id = t.id INNER JOIN rooms AS r ON tr.room_id = r.id WHERE reg.student_id = %s', index)
-    row_headers = [x[0] for x in cur.description]
-    rv = cur.fetchall()
-    result = []
-    for r in rv:
-        result.append(dict(zip(row_headers, r)))
-    return json.dumps(result)
 
 @app.route('/registed', methods=['POST'])
 def registed():
@@ -391,20 +370,11 @@ def deleteRegistered():
     mysql.connection.autocommit(on=True)
     data = request.get_json(force=True)
     key = data['id']
-    print(key)
     cur = mysql.connection.cursor()
     cur.execute('DELETE FROM registered WHERE id = %s', [key])
     cur.close()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
-
-@app.route('/test1', methods=["GET"])
-def test1():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM users')
-    rv = cur.fetchall()
-    result = json.dumps(rv)
-    return result
 
 
 if __name__ == '__main__':

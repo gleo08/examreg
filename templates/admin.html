@@ -3,4 +3,289 @@
 {% block body %}
 	<h1>Admin <small>Welcome {{ session.username }}</small></h1>
 
+	<ul class="nav nav-tabs" id="myTab">
+		<li class="active"><a data-toggle="tab" href="#makeContest">Make contest</a></li>
+		<li><a data-toggle="tab" href="#subject">Subjects of semester</a></li>
+		<li><a data-toggle="tab" href="#ss">Student Subject</a></li>
+		<li><a data-toggle="tab" href="#account">Provide account</a></li>
+  		<li><a data-toggle="tab" href="#shift">Shifts</a></li>
+		<li><a data-toggle="tab" href="#room">Rooms</a></li>
+  		<li><a data-toggle="tab" href="#result">Result</a></li>
+	</ul>
+
+	<div class="tab-content">
+
+<!-- BEGIN MAKE CONTEST-->
+		<div id="makeContest" class="tab-pane fade in active">
+			<h2>Make Contest</h2>
+			<fieldset>
+				<div class="form-group">
+					<input class="form-control" placeholder="Name Contest" id="nameContest" type="text">
+				</div>
+				<button class="btn btn-primary" id="submit">Confirm</button>
+			</fieldset>
+		</div>
+<!-- END MAKE CONTEST -->
+
+<!-- BEGIN SUBJECTS OF SEMESTER -->
+		<div id="subject" class="tab-pane fade">
+			<h2>Subjects of semester</h2>
+			<form id="upload-file" method="post" enctype="multipart/form-data">
+				<fieldset>
+					<label for="file">Select a file</label>
+					<input type="file" name="file" >
+				</fieldset>
+				<br>
+				<fieldset>
+					<button type="button" id="submit1" class="btn btn-primary">Confirm</button>
+				</fieldset>
+			</form>
+			<br>
+			<form id="formshow" style="display: none">
+				<p><big>Show subjects:</big></p>
+				<button type="button" id="show" class="btn btn-primary">Show</button
+			</form>
+			<br>
+			<table id="tb1" class="table table-hover" style="display: none">
+					<thead class="thead-dark">
+    					<tr>
+        					<th scope="col">#</th>
+        					<th scope="col">Subject Name</th>
+							<th scope="col">Subject Code</th>
+    					</tr>
+					</thead>
+						<tbody id="tdata1">
+
+						</tbody>
+			</table>
+		</div>
+<!-- END SUBJECTS OF SEMESTER -->
+
+<!-- BEGIN STUDENT SUBJECT-->
+		<div id="ss" class="tab-pane fade">
+			<h2>Student Subject</h2>
+			<form method="POST" enctype="multipart/form-data">
+				<input type="file" name="file">
+				<br>
+				<button type="submit" id="submit2" class="btn btn-primary">Confirm</button>
+			</form>
+		</div>
+<!-- END STUDENT SUBJECT -->
+
+<!-- BEGIN ACCOUNT -->
+		<div id="account" class="tab-pane fade">
+			<h2>Account of Students</h2>
+			<p><big>Insert account for students</big></p>
+			<form method="POST" enctype="multipart/form-data">
+				<input type="file" name="file">
+				<br>
+				<button type="submit" id="submit3" class="btn btn-primary">Confirm</button>
+			</form>
+		</div>
+<!-- END ACCOUNT -->
+
+<!-- BEGIN SHIFT-->
+		<div id="shift" class="tab-pane fade">
+			<h2>Shift</h2>
+			<table id="tb2" class="table table-hover">
+					<thead class="thead-dark">
+    					<tr>
+        					<th scope="col">#</th>
+        					<th scope="col">Date</th>
+							<th scope="col">Name</th>
+							<th scope="col">Begin time</th>
+							<th scope="col">End time</th>
+    					</tr>
+					</thead>
+						<tbody id="tdata2">
+
+						</tbody>
+			</table>
+			<br>
+			<button class="btn btn-primary" id="add1" onclick="formAdd1()">Add</button>
+			<br>
+			<br>
+			<div class="form-group" id="formAddShift" style="display: none">
+				<input class="form-control" placeholder="Date" name="date" type="text">
+				<input class="form-control" placeholder="Name" name="shiftName" type="text">
+				<input class="form-control" placeholder="Begin time" name="beginTime" type="text">
+				<input class="form-control" placeholder="End time" name="endTime" type="text">
+				<br>
+				<button type="submit" id="submit4" class="btn btn-primary">Confirm</button>
+			</div>
+		</div>
+
+<!-- END SHIFT -->
+
+<!-- BEGIN Rooms -->
+		<div id="room" class="tab-pane fade">
+			<h2>Rooms</h2>
+			<table id="tb3" class="table table-hover">
+					<thead class="thead-dark">
+    					<tr>
+        					<th scope="col">#</th>
+        					<th scope="col">Name</th>
+							<th scope="col">Slots</th>
+    					</tr>
+					</thead>
+						<tbody id="tdata3">
+
+						</tbody>
+			</table>
+			<br>
+			<button class="btn btn-primary" id="add2" onclick="formAdd2()">Add</button>
+			<br>
+			<br>
+			<div class="form-group" id="formAddRoom" style="display: none">
+				<input class="form-control" placeholder="Name" name="shiftName" type="text">
+				<input class="form-control" placeholder="Slots" name="slots" type="text">
+				<br>
+				<button type="submit" id="submit5" class="btn btn-primary">Confirm</button>
+			</div>
+		</div>
+<!-- END Rooms -->
+
+<!-- BEGIN Result -->
+		<div id="result" class="tab-pane fade">
+			<h2>Result</h2>
+			<div>
+  				<label for="sel1">Select subject:</label>
+  				<select class="form-control" id="sel1">
+  				</select>
+			</div>
+			<br>
+			<div>
+  				<label for="sel2">Select shift:</label>
+  				<select class="form-control" id="sel2">
+					<option>Choose</option>
+  				</select>
+			</div>
+			<br>
+			<div>
+  				<label for="sel3">Select room:</label>
+  				<select class="form-control" id="sel3">
+					<option>Choose</option>
+  				</select>
+			</div>
+			<br>
+			<div>
+				<button type="button" name="check" id="check" class="btn btn-primary">Check</button>
+			</div>
+			<br>
+			<table id="tb4" class="table table-hover">
+					<thead class="thead-dark">
+    					<tr>
+        					<th scope="col">#</th>
+        					<th scope="col">Student Name</th>
+							<th scope="col">Date of Birth</th>
+							<th scope="col">Note</th>
+    					</tr>
+					</thead>
+						<tbody id="tdata4">
+
+						</tbody>
+			</table>
+			<br>
+			<div>
+				<button type="button" name="save" id="save" class="btn btn-success">Save</button>
+			</div>
+		</div>
+
+<!-- END Result -->
+	</div>
+
+<!-- Make Contest -->
+	<script>
+		$(document).ready(function(){
+			$("#submit").click(function(){
+				var name = $("#nameContest").val();
+				console.log(name);
+				var data =
+					{
+						nameContest: name
+					};
+				var respone = JSON.stringify(data);
+				$.ajax({
+            			type: "POST",
+            			contentType: "application/json",
+            			url: "http://127.0.0.1:5000/makeContest",
+            			dataType: "json",
+            			data: respone,
+            			success: function (respone) {
+               				if (respone.success){
+               					alert("Success");
+               					location.reload();
+               				}
+            			},
+            			error: function () {
+             				console.log("Error");
+            			}
+        		});
+			});
+		});
+	</script>
+
+<!-- END Make Contest -->
+
+<!-- BEGIN Subjects of semester -->
+	<script>
+		$(document).ready(function(){
+			$("#submit1").click(function(){
+				var form_data = new FormData($("#upload-file")[0]);
+				$.ajax({
+					type: "POST",
+        			url: "http://127.0.0.1:5000/insertSubjects",
+        			cache: false,
+        			contentType: false,
+        			processData: false,
+        			data: form_data,
+        			success: function(){
+        					alert("Success");
+        			},
+     			});
+     			$("#upload-file").css("display", "none");
+     			$("#formshow").removeAttr("style");
+     		});
+     	});
+	</script>
+
+
+	<script>
+		$(document).ready(function(){
+			$("#show").click(function(){
+     			$.get("http://127.0.0.1:5000/getSubjects", function(data, status){
+					var data = JSON.parse(data);
+					var count = 1;
+					var txt ="";
+						data.forEach(function(dt){
+							txt += "<tr><td>"+count+"</td><td>"+dt.name+"</td><td>"+dt.code+"</dt></tr>";
+							console.log
+							count++;
+						});
+					$("#tdata1").html(txt);
+					$("#tb1").removeAttr('style');
+				});
+			});
+		});
+	</script>
+<!-- END Subjects of semester -->
+
+
+	<script>
+		$('#myTab a').click(function(e) {
+  			e.preventDefault();
+  			$(this).tab('show');
+		});
+
+		// store the currently selected tab in the hash value
+		$("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+  			var id = $(e.target).attr("href").substr(1);
+  			window.location.hash = id;
+		});
+
+		// on load of the page: switch to the currently selected tab
+		var hash = window.location.hash;
+		$('#myTab a[href="' + hash + '"]').tab('show');
+	</script>
+
 {% endblock %}

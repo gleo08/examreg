@@ -28,8 +28,9 @@
 				</table>
 		</div>
 <!-- END INFORMATION -->
-  		<div id="reg" class="tab-pane fade">
+
 <!-- BEGIN REGISTRATION -->
+		<div id="reg" class="tab-pane fade">
     		<h2>Exam Registration</h2>
 			<div>
   				<label for="sel1">Select subject:</label>
@@ -38,14 +39,14 @@
 			</div>
 			<br>
 			<div>
-  				<label for="sel2">Select Shift:</label>
+  				<label for="sel2">Select shift:</label>
   				<select class="form-control" id="sel2">
 					<option>Choose</option>
   				</select>
 			</div>
 			<br>
 			<div>
-  				<label for="sel3">Select Room:</label>
+  				<label for="sel3">Select room:</label>
   				<select class="form-control" id="sel3">
 					<option>Choose</option>
   				</select>
@@ -86,6 +87,7 @@
 	</div>
 <!-- END RESULT -->
 
+<!--GET information of subjects for student -->
 	<script>
 		$(document).ready(function(){
 				$.get("http://127.0.0.1:5000/yourSubjects", function(data, status){
@@ -115,7 +117,7 @@
 		});
 	</script>
 
-
+<!-- Form select subjects -->
 	<script>
 		$(document).ready(function(){
 			var txt = "<option value='-1'>Choose</option>";
@@ -129,7 +131,7 @@
 		});
 	</script>
 
-
+<!-- Form select timing of subject -->
 	<script>
 		$(document).ready(function(){
 			var txt = "<option value='-1'>Choose</option>";
@@ -148,7 +150,7 @@
 		});
 	</script>
 
-
+<!-- Form select room of timing -->
 	<script>
 		$(document).ready(function(){
 			var txt = "<option value='-1'>Choose</option>";
@@ -170,6 +172,8 @@
 		});
 	</script>
 
+
+<!-- Process Registration -->
 	<script>
 		$(document).ready(function(){
 			var txt = "<option value='-1'>Choose</option>";
@@ -224,6 +228,7 @@
 		});
 	</script>
 
+<!-- Result registered -->
 	<script>
 		$(document).ready(function(){
 			$.get("http://127.0.0.1:5000/getRegisted", function(data, status){
@@ -239,6 +244,8 @@
 		});
 	</script>
 
+
+<!-- Delete result -->
 	<script>
 		function deleteRegistered(id) {
 			var data = {
@@ -262,6 +269,8 @@
 		}
 	</script>
 
+
+<!-- Keep tab selected page refresh -->
 	<script>
 		$('#myTab a').click(function(e) {
   			e.preventDefault();
@@ -279,6 +288,8 @@
 		$('#myTab a[href="' + hash + '"]').tab('show');
 	</script>
 
+
+<!-- Save result in local system -->
 	<script>
     	$(document).ready(function() {
         	$('#save').click(function() {
@@ -291,4 +302,6 @@
         	});
     	});
 	</script>
+
+
 {% endblock %}

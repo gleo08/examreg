@@ -1,3 +1,5 @@
 flask
 flask-mysqldb
+functools
+config
 pandas

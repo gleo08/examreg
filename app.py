@@ -18,11 +18,11 @@ app.config['MYSQL_CURSORCLASS'] = config.mysql_cursor_class
 # init MYSQL
 mysql = MySQL(app)
 
-# mysql.connection.autocommit(on=True)
 
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -69,7 +69,10 @@ def login():
 
     return render_template('login.html')
 
+
 # User login
+
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
@@ -162,6 +165,7 @@ def logout():
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
 
+
 @app.route('/student')
 @is_logged_in
 @is_logged_in1
@@ -176,8 +180,17 @@ def admin():
     return render_template('admin.html')
 
 
-@app.route('/upload1', methods=['POST'] )
-def upload1():
+@app.route('/getSubjects', methods=['GET'])
+def getSubjects():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM subjects')
+    rv = cur.fetchall()
+    result = json.dumps(rv)
+    return result
+
+
+@app.route('/insertUsers', methods=['POST'] )
+def insertUsers():
     mysql.connection.autocommit(on=True)
     cur = mysql.connection.cursor()
     f = request.files['inputFile']
@@ -190,24 +203,23 @@ def upload1():
     return redirect(url_for('admin'))
 
 
-@app.route('/upload2', methods=['POST'])
-def upload2():
+@app.route('/insertSubjects', methods=['POST'])
+def insertSubjects():
     mysql.connection.autocommit(on=True)
     cur = mysql.connection.cursor()
-    f = request.files['inputFile']
+    f = request.files['file']
     r = pd.read_csv(f, sep=',')
-    for it in r.iterows():
-        cur.execute('INSERT INTO subjects_students(student_id, subject_id, contest_id, is_approved) VALUES(%s, %s, %s, %s)', it[1])
+    for it in r.iterrows():
+        cur.execute('INSERT INTO subjects(name, code) VALUES(%s, %s)', it[1])
     cur.close()
-    flash('Import Success', 'success')
-    return redirect(url_for('admin'))
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/makeContest', methods=['POST'])
 def makeContest():
     mysql.connection.autocommit(on=True)
-    data = request.json()
-    nameContest = data['namecontest']
+    data = request.get_json()
+    nameContest = data['nameContest']
     cur = mysql.connection.cursor()
     cur.execute('INSERT INTO contest(name) VALUES (%s)', [nameContest])
     cur.close()
@@ -280,6 +292,7 @@ def timingOfSubject():
             #result.append(dict(zip(row_headers, r)))
         result = json.dumps(rv)
         return result
+
 
 @app.route('/roomOfTimingSubject', methods=['GET'])
 def roomOfTimingSubject():
@@ -374,7 +387,6 @@ def deleteRegistered():
     cur.execute('DELETE FROM registered WHERE id = %s', [key])
     cur.close()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-
 
 
 if __name__ == '__main__':

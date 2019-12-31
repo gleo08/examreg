@@ -193,14 +193,12 @@ def getSubjects():
 def insertUsers():
     mysql.connection.autocommit(on=True)
     cur = mysql.connection.cursor()
-    f = request.files['inputFile']
+    f = request.files['file']
     r = pd.read_csv(f, sep=',')
     for it in r.iterrows():
-       cur.execute('INSERT INTO users(user_name, pass, name, role_id) VALUES(%s, %s, %s, %s)', it[1])
-
+       cur.execute('INSERT INTO users(user_name, pass, name, date_of_birth, role_id) VALUES(%s, %s, %s, %s, %s)', it[1])
     cur.close()
-    flash('Import Success', 'success')
-    return redirect(url_for('admin'))
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/insertSubjects', methods=['POST'])
@@ -211,6 +209,19 @@ def insertSubjects():
     r = pd.read_csv(f, sep=',')
     for it in r.iterrows():
         cur.execute('INSERT INTO subjects(name, code) VALUES(%s, %s)', it[1])
+    cur.close()
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
+@app.route('/insertSS/<id>', methods=['POST'])
+def insertSS(id):
+    subjectId = id;
+    mysql.connection.autocommit(on=True)
+    cur = mysql.connection.cursor()
+    f = request.files['file']
+    r = pd.read_csv(f, sep=',')
+    for it in r.iterrows():
+        cur.execute('INSERT INTO students_subjects(student_id, contest_id, is_approved, subject_id) VALUES(%s, %s, %s, %s)', [it[1][0],it[1][1],it[1][2],subjectId])
     cur.close()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 

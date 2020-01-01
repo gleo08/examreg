@@ -5,11 +5,12 @@
 
 	<ul class="nav nav-tabs" id="myTab">
 		<li class="active"><a data-toggle="tab" href="#makeContest">Make contest</a></li>
-		<li><a data-toggle="tab" href="#subject">Subjects of semester</a></li>
+		<li><a data-toggle="tab" href="#subject">Subjects</a></li>
 		<li><a data-toggle="tab" href="#account">Provide account</a></li>
 		<li><a data-toggle="tab" href="#ss">Student Subject</a></li>
-  		<li><a data-toggle="tab" href="#shift">Shifts</a></li>
+		<li><a data-toggle="tab" href="#shift">Shifts</a></li>
 		<li><a data-toggle="tab" href="#room">Rooms</a></li>
+		<li><a data-toggle="tab" href="#srs">Shift Room Subject</a></li>
   		<li><a data-toggle="tab" href="#result">Result</a></li>
 	</ul>
 
@@ -120,14 +121,14 @@
 						</tbody>
 			</table>
 			<br>
-			<button class="btn btn-primary" id="add1" onclick="formAdd1()">Add</button>
+			<button class="btn btn-primary" id="add1" name="add1">Add</button>
 			<br>
 			<br>
 			<div class="form-group" id="formAddShift" style="display: none">
-				<input class="form-control" placeholder="Date" name="date" type="text">
-				<input class="form-control" placeholder="Name" name="shiftName" type="text">
-				<input class="form-control" placeholder="Begin time" name="beginTime" type="text">
-				<input class="form-control" placeholder="End time" name="endTime" type="text">
+				<input class="form-control" placeholder="Date" id="date" type="text">
+				<input class="form-control" placeholder="Name" id="shiftName" type="text">
+				<input class="form-control" placeholder="Begin time" id="beginTime" type="text">
+				<input class="form-control" placeholder="End time" id="endTime" type="text">
 				<br>
 				<button type="submit" id="submit4" class="btn btn-primary">Confirm</button>
 			</div>
@@ -151,17 +152,42 @@
 						</tbody>
 			</table>
 			<br>
-			<button class="btn btn-primary" id="add2" onclick="formAdd2()">Add</button>
+			<button class="btn btn-primary" id="add2" name="add2">Add</button>
 			<br>
 			<br>
 			<div class="form-group" id="formAddRoom" style="display: none">
-				<input class="form-control" placeholder="Name" name="shiftName" type="text">
-				<input class="form-control" placeholder="Slots" name="slots" type="text">
+				<input class="form-control" placeholder="Name" id="roomName" type="text">
+				<input class="form-control" placeholder="Slots" id="slots" type="text">
 				<br>
 				<button type="submit" id="submit5" class="btn btn-primary">Confirm</button>
 			</div>
 		</div>
 <!-- END Rooms -->
+
+<!-- BEGIN Shift Room Subject -->
+	<div id="srs" class="tab-pane fade">
+			<h2>Student Subject</h2>
+			<div>
+  				<label for="sel1">Select subject:</label>
+  				<select class="form-control" id="sel4">
+  				</select>
+				<br>
+				<button type="button" id="choose1" class="btn btn-primary">Confirm</button>
+			</div>
+			<br>
+			<form id="upload-file4" method="post" enctype="multipart/form-data" style="display: none">
+				<h3>Upload shift room list</h3>
+				<fieldset>
+					<label for="file">Select a file</label>
+					<input type="file" name="file" >
+				</fieldset>
+				<br>
+				<fieldset>
+					<button type="button" id="submit6" class="btn btn-primary">Upload</button>
+				</fieldset>
+			</form>
+		</div>
+<!-- END Shift Room Subject -->
 
 <!-- BEGIN Result -->
 		<div id="result" class="tab-pane fade">
@@ -360,9 +386,177 @@
 
 <!-- BEGIN Shift -->
 	<script>
-
+		$(document).ready(function(){
+			$.get("http://127.0.0.1:5000/getListOfTiming", function(data, status){
+				var data = JSON.parse(data);
+				var count = 1;
+				data.forEach(function(dt){
+					$("#tdata2").append("<tr>"+
+							"<td>"+count+"</td>"+
+							"<td>"+dt.date+"</td>"+
+							"<td>"+dt.name+"</td>"+
+							"<td>"+dt.begin_time+"</td>"+
+							"<td>"+dt.end_time+"</td>"
+							+"</tr>"
+					);
+					count++;
+				});
+			});
+		});
 	</script>
+
+	<script>
+		$(document).ready(function(){
+			$("#add1").click(function(){
+				$("#formAddShift").removeAttr("style");
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$("#submit4").click(function(){
+				var i = $("#date").val();
+				var j = $("#shiftName").val();
+				var k = $("#beginTime").val();
+				var l = $("#endTime").val();
+				var data = {
+					date: i,
+					shiftName: j,
+					beginTime: k,
+					endTime: l
+				}
+				var result = JSON.stringify(data);
+				$.ajax({
+					type: "POST",
+            		contentType: "application/json",
+            		url: "http://127.0.0.1:5000/addTiming",
+            		dataType: "json",
+            		data: result,
+           			success: function () {
+						alert("Success");
+						location.reload();
+					},
+					error: function() {
+						alert("Error");
+					}
+				});
+			});
+		});
+	</script>
+
 <!-- END Shift -->
+
+<!-- BEGIN Room -->
+	<script>
+		$(document).ready(function(){
+			$.get("http://127.0.0.1:5000/getListOfRooms", function(data, status){
+				var data = JSON.parse(data);
+				var count = 1;
+				data.forEach(function(dt){
+					$("#tdata3").append("<tr>"+
+							"<td>"+count+"</td>"+
+							"<td>"+dt.name+"</td>"+
+							"<td>"+dt.slots+"</td>"
+							+"</tr>"
+					);
+					count++;
+				});
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+			$("#add2").click(function(){
+				$("#formAddRoom").removeAttr("style");
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$("#submit5").click(function(){
+				var i = $("#roomName").val();
+				var j = $("#slots").val();
+				var data = {
+					roomName: i,
+					slots: j
+				}
+				var result = JSON.stringify(data);
+				console.log(result);
+				$.ajax({
+					type: "POST",
+            		contentType: "application/json",
+            		url: "http://127.0.0.1:5000/addRoom",
+            		dataType: "json",
+            		data: result,
+           			success: function () {
+						alert("Success");
+						location.reload();
+					},
+					error: function() {
+						alert("Error");
+					}
+				});
+			});
+		});
+	</script>
+<!-- END Room -->
+
+<!-- BEGIN Shift Room for Subject -->
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$.get("http://127.0.0.1:5000/getSubjects", function(data, status){
+				var data = JSON.parse(data);
+				data.forEach(function(dt){
+					txt += "<option id='subject' value='"+dt.id+"'>"+dt.code+"("+dt.name+")"+"</option>";
+				});
+				$("#sel4").html(txt);
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+			$("#sel4").change(function(){
+				$("#choose1").click(function(){
+					var i = $("#sel4").val();
+					$("#upload-file4").removeAttr("style");
+						$("#submit6").click(function(){
+							var form_data = new FormData($("#upload-file4")[0]);
+							$.ajax({
+								type: "POST",
+        						url: "http://127.0.0.1:5000/insertSRS/"+i,
+        						cache: false,
+        						contentType: false,
+        						processData: false,
+        						data: form_data,
+        						success: function(){
+        							alert("Success");
+        							location.reload();
+        						},
+        						error: function(){
+        							console.log("Error");
+        						}
+							});
+						});
+				});
+			});
+     	});
+	</script>
+
+
+<!-- END Shift Room for Sunject -->
+
+<!-- BEGIN Result -->
+	<script>
+		
+	</script>
+<!-- END REsult -->
 
 <!-- Keep selected tab page refresh -->
 	<script>

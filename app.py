@@ -240,29 +240,42 @@ def makeContest():
 @app.route('/addTiming', methods=['POST'])
 def addTiming():
     mysql.connection.autocommit(on=True)
-    data = request.json()
-    name = data['name']
-    begin_time = data['begin_time']
-    end_time = data['end_time']
+    data = request.get_json()
+    date = data['date']
+    name = data['shiftName']
+    begin_time = data['beginTime']
+    end_time = data['endTime']
     cur = mysql.connection.cursor()
-    cur.execute('INSERT INTO timing(name, begin_time, end_time) VALUES (%s, %s, %s)', [name, begin_time, end_time])
+    cur.execute('INSERT INTO timing(date, name, begin_time, end_time) VALUES (%s, %s, %s, %s)', [date, name, begin_time, end_time])
     cur.close()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
-@app.route('/addRooms', methods=['POST'])
+@app.route('/addRoom', methods=['POST'])
 def addRoom():
     if request.method == 'POST':
         data = request.get_json()
-        name = data['name']
+        name = data['roomName']
         slots =  data['slots']
-
         mysql.connection.autocommit(on=True)
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO rooms (name, slots) VALUES(%s, %s)",
-                    (name, slots))
+        cur.execute("INSERT INTO rooms (name, slots) VALUES(%s, %s)",(name, slots))
         cur.close()
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
+@app.route('/insertSRS/<id>', methods=["POST"])
+def insertSRS(id):
+    subjectId = id;
+    mysql.connection.autocommit(on=True)
+    cur = mysql.connection.cursor()
+    f = request.files['file']
+    r = pd.read_csv(f, sep=',')
+    for it in r.iterrows():
+        cur.execute('INSERT INTO timing_room(timing_id, room_id, contest_id, subject_id) VALUES(%s, %s, %s, %s)',[it[1][0], it[1][1], it[1][2], subjectId])
+    cur.close()
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
 
 
 @app.route('/getListOfRooms', methods=['GET'])

@@ -215,13 +215,13 @@ def insertSubjects():
 
 @app.route('/insertSS/<id>', methods=['POST'])
 def insertSS(id):
-    subjectId = id;
+    subjectId = id
     mysql.connection.autocommit(on=True)
     cur = mysql.connection.cursor()
     f = request.files['file']
     r = pd.read_csv(f, sep=',')
     for it in r.iterrows():
-        cur.execute('INSERT INTO students_subjects(student_id, contest_id, is_approved, subject_id) VALUES(%s, %s, %s, %s)', [it[1][0],it[1][1],it[1][2],subjectId])
+        cur.execute('INSERT INTO students_subjects(student_id, student_name, date_of_birth, contest_id, is_approved, subject_id) VALUES(%s, %s, %s, %s, %s, %s)', [it[1][0],it[1][1],it[1][2],it[1][3],it[1][4],subjectId])
     cur.close()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
@@ -266,7 +266,7 @@ def addRoom():
 
 @app.route('/insertSRS/<id>', methods=["POST"])
 def insertSRS(id):
-    subjectId = id;
+    subjectId = id
     mysql.connection.autocommit(on=True)
     cur = mysql.connection.cursor()
     f = request.files['file']
@@ -275,7 +275,6 @@ def insertSRS(id):
         cur.execute('INSERT INTO timing_room(timing_id, room_id, contest_id, subject_id) VALUES(%s, %s, %s, %s)',[it[1][0], it[1][1], it[1][2], subjectId])
     cur.close()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-
 
 
 @app.route('/getListOfRooms', methods=['GET'])
@@ -317,6 +316,23 @@ def timingOfSubject():
         result = json.dumps(rv)
         return result
 
+
+@app.route('/timingOfSubjectAdmin', methods=['GET'])
+def timingOfSubjectAdmin():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT tr.timing_id, t.name, t.begin_time, t.end_time, tr.subject_id FROM timing_room AS tr INNER JOIN timing AS t ON t.id = tr.timing_id')
+    rv = cur.fetchall()
+    result = json.dumps(rv)
+    return result
+
+
+@app.route('/roomOfTimingSubjectAdmin', methods=['GET'])
+def roomresult():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT r.name, r.id, tr.timing_id, tr.subject_id FROM timing_room AS tr INNER JOIN rooms AS r ON tr.room_id = r.id ')
+    rv = cur.fetchall()
+    result = json.dumps(rv)
+    return result
 
 @app.route('/roomOfTimingSubject', methods=['GET'])
 def roomOfTimingSubject():
@@ -389,10 +405,8 @@ def getRegisted():
 
 @app.route('/registedAdmin', methods=['GET'])
 def registedAdmin():
-    data = request.get_json()
-    timing_name, room_name = data['timing_name'], data['room_name']
     cur = mysql.connection.cursor()
-    cur.execute('SELECT u.name, s.code, t.name, t.begin_time, t.end_time FROM registered AS reg INNER JOIN timing_room AS tr ON reg.timing_room_id = tr.id INNER JOIN subjects AS s ON tr.subject_id = s.id INNER JOIN timing AS t ON tr.timing_id = t.id INNER JOIN rooms AS r ON tr.room_id = r.id INNER JOIN users AS u ON reg.student_id = u.id ORDER BY u.name DESC WHERE t.name = %s AND r.name = %s', [timing_name, room_name])
+    cur.execute('SELECT u.name, u.date_of_birth FROM registered AS reg  INNER JOIN timing_room AS tr ON reg.timing_room_id = tr.id INNER JOIN users AS u ON reg.student_id = u.id INNER JOIN rooms AS r ON tr.room_id = r.id INNER JOIN timing AS t ON t.id = tr.timing_id INNER JOIN subjects AS s ON tr.subject_id = s.id')
     #row_headers = [x[0] for x in cur.description]
     rv = cur.fetchall()
     #result = []
@@ -400,6 +414,47 @@ def registedAdmin():
         #result.append(dict(zip(row_headers, r)))
     result = json.dumps(rv)
     return result
+
+
+@app.route('/getDate', methods=['GET'])
+def getDate():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT DISTINCT t.date FROM timing AS t')
+    rv = cur.fetchall()
+    result = json.dumps(rv)
+    return result
+
+
+@app.route('/getShiftOfDate', methods=['GET'])
+def getShift():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT t.id, t.date, t.name, t.begin_time, t.end_time FROM timing AS t')
+    rv = cur.fetchall()
+    result = json.dumps(rv)
+    return result
+
+
+@app.route('/getRooms', methods=['GET'])
+def getRooms():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT r.id, r.name, r.slots FROM rooms AS r')
+    rv = cur.fetchall()
+    result = json.dumps(rv)
+    return result
+
+
+@app.route('/insertTRS', methods=['POST'])
+def insert():
+    mysql.connection.autocommit(on=True)
+    cur = mysql.connection.cursor()
+    data = request.get_json()
+    tID = data['timing_id']
+    print(data)
+    rID = data['room_id']
+    sID = data['subject_id']
+    cur.execute('INSERT INTO timing_room(timing_id, room_id, subject_id, contest_id) VALUES(%s, %s,%s,%s)', [tID, rID, sID, 1])
+    cur.close()
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/deleteRegistered', methods=['POST'])

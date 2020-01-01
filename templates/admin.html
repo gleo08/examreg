@@ -10,7 +10,7 @@
 		<li><a data-toggle="tab" href="#ss">Student Subject</a></li>
 		<li><a data-toggle="tab" href="#shift">Shifts</a></li>
 		<li><a data-toggle="tab" href="#room">Rooms</a></li>
-		<li><a data-toggle="tab" href="#srs">Shift Room Subject</a></li>
+		<li><a data-toggle="tab" href="#srs">Schedule</a></li>
   		<li><a data-toggle="tab" href="#result">Result</a></li>
 	</ul>
 
@@ -93,7 +93,7 @@
 			<form id="upload-file3" method="post" enctype="multipart/form-data">
 				<fieldset>
 					<label for="file">Select a file</label>
-					<input type="file" name="file" >
+					<input type="file" name="file">
 				</fieldset>
 				<br>
 				<fieldset>
@@ -164,75 +164,91 @@
 		</div>
 <!-- END Rooms -->
 
-<!-- BEGIN Shift Room Subject -->
+<!-- BEGIN Shchedule -->
 	<div id="srs" class="tab-pane fade">
-			<h2>Student Subject</h2>
+			<h2>Schedule</h2>
 			<div>
-  				<label for="sel1">Select subject:</label>
+  				<label for="sel">Select subject:</label>
   				<select class="form-control" id="sel4">
   				</select>
-				<br>
-				<button type="button" id="choose1" class="btn btn-primary">Confirm</button>
 			</div>
 			<br>
-			<form id="upload-file4" method="post" enctype="multipart/form-data" style="display: none">
-				<h3>Upload shift room list</h3>
-				<fieldset>
-					<label for="file">Select a file</label>
-					<input type="file" name="file" >
-				</fieldset>
-				<br>
-				<fieldset>
-					<button type="button" id="submit6" class="btn btn-primary">Upload</button>
-				</fieldset>
-			</form>
+			<div>
+				<label for="sel">Select date:</label>
+				<select class="form-control" id="sel5">
+					<option>Choose</option>
+				</select>
+			</div>
+			<br>
+			<div>
+				<label for="sel">Select shift:</label>
+				<select class="form-control" id="sel6">
+					<option>Choose</option>
+				</select>
+			</div>
+			<br>
+			<div>
+				<label for="sel">Select room:</label>
+				<select class="form-control" id="sel7">
+					<option>Choose</option>
+				</select>
+			</div>
+			<br>
+			<button type="button" id="confirm" class="btn btn-primary">Confirm</button>
 		</div>
-<!-- END Shift Room Subject -->
+<!-- END Schedule -->
 
 <!-- BEGIN Result -->
 		<div id="result" class="tab-pane fade">
 			<h2>Result</h2>
-			<div>
-  				<label for="sel1">Select subject:</label>
-  				<select class="form-control" id="sel1">
-  				</select>
-			</div>
-			<br>
-			<div>
-  				<label for="sel2">Select shift:</label>
-  				<select class="form-control" id="sel2">
-					<option>Choose</option>
-  				</select>
-			</div>
-			<br>
-			<div>
-  				<label for="sel3">Select room:</label>
-  				<select class="form-control" id="sel3">
-					<option>Choose</option>
-  				</select>
-			</div>
-			<br>
-			<div>
-				<button type="button" name="check" id="check" class="btn btn-primary">Check</button>
-			</div>
-			<br>
-			<table id="tb4" class="table table-hover">
-					<thead class="thead-dark">
-    					<tr>
-        					<th scope="col">#</th>
-        					<th scope="col">Student Name</th>
-							<th scope="col">Date of Birth</th>
-							<th scope="col">Note</th>
-    					</tr>
-					</thead>
-						<tbody id="tdata4">
+			<form id="select">
+				<div>
+  					<label for="sel1">Select subject:</label>
+  					<select class="form-control" id="sel1">
+  					</select>
+				</div>
+				<br>
+				<div>
+  					<label for="sel2">Select shift:</label>
+  					<select class="form-control" id="sel2">
+						<option>Choose</option>
+  					</select>
+				</div>
+				<br>
+				<div>
+  					<label for="sel3">Select room:</label>
+  					<select class="form-control" id="sel3">
+						<option>Choose</option>
+  					</select>
+				</div>
+				<br>
+				<div>
+					<button type="button" name="check" id="check" class="btn btn-primary">Check</button>
+				</div>
+				<br>
+			</form>
+			<form id="list" style="display: none">
+				<table id="tb4" class="table table-hover">
+						<thead class="thead-dark">
+    						<tr>
+        						<th scope="col">#</th>
+        						<th scope="col">Student Name</th>
+								<th scope="col">Date of Birth</th>
+    						</tr>
+						</thead>
+							<tbody id="tdata4">
 
-						</tbody>
-			</table>
-			<br>
-			<div>
-				<button type="button" name="save" id="save" class="btn btn-success">Save</button>
-			</div>
+							</tbody>
+				</table>
+				<br>
+				<div>
+					<button type="button" name="save" id="save" class="btn btn-success">Save</button>
+				</div>
+				<br>
+				<div>
+					<button type="button" name="continue" id="continue" class="btn btn-primary">Continue</button>
+				</div>
+			</form>
 		</div>
 
 <!-- END Result -->
@@ -377,6 +393,7 @@
         			data: form_data,
         			success: function(){
         					alert("Success");
+        					location.reload();
         			},
      			});
      		});
@@ -522,41 +539,211 @@
 
 	<script>
 		$(document).ready(function(){
-			$("#sel4").change(function(){
-				$("#choose1").click(function(){
-					var i = $("#sel4").val();
-					$("#upload-file4").removeAttr("style");
-						$("#submit6").click(function(){
-							var form_data = new FormData($("#upload-file4")[0]);
-							$.ajax({
-								type: "POST",
-        						url: "http://127.0.0.1:5000/insertSRS/"+i,
-        						cache: false,
-        						contentType: false,
-        						processData: false,
-        						data: form_data,
-        						success: function(){
-        							alert("Success");
-        							location.reload();
-        						},
-        						error: function(){
-        							console.log("Error");
-        						}
-							});
-						});
+			var txt = "<option value='-1'>Choose</option>";
+			$.get("http://127.0.0.1:5000/getDate", function(data, status){
+				var data = JSON.parse(data);
+				data.forEach(function(dt){
+					txt += "<option id='date' value='"+dt.date+"'>"+dt.date+"</option>";
 				});
+				$("#sel5").html(txt);
 			});
-     	});
+
+		});
 	</script>
 
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$("#sel5").change(function(){
+				var i = $("#sel5").val();
+				$.get("http://127.0.0.1:5000/getShiftOfDate", function(data, status){
+					var data = JSON.parse(data);
+					data.forEach(function(dt){
+						if (i == dt.date) {
+							txt += "<option id='shift' value='"+dt.id+"'>"+dt.name+"("+dt.begin_time+" to "+dt.end_time+")"+"</option>";
+						}
+					});
+					$("#sel6").html(txt);
+				});
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function() {
+			var txt = "<option value='-1'>Choose</option>";
+			$("#sel5").change(function() {
+				$("#sel6").change(function() {
+					$.get("http://127.0.0.1:5000/getRooms", function(data, status) {
+						var data = JSON.parse(data);
+						data.forEach(function(dt) {
+							txt += "<option id='room' value='"+dt.id+"'>"+dt.name+"("+dt.slots+")"+"</option>";
+						});
+						$("#sel7").html(txt);
+					});
+				});
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function() {
+			$("#confirm").click(function() {
+				var i = $("#sel4").val();
+				var j = $("#sel5").val();
+				var k = $("#sel6").val();
+				var l = $("#sel7").val();
+				if (i == -1){
+					alert("Please choose subject");
+				}
+				if (j == -1){
+					alert("Please choose date");
+				}
+				if (k == -1){
+					alert("Please choose shift");
+				}
+				if (l == -1){
+					alert("Please choose room");
+				}
+				else {
+					var data = {
+						timing_id: k,
+						room_id: l,
+						subject_id: i
+					}
+					result = JSON.stringify(data);
+					$.ajax({
+						type: "POST",
+						contentType: "application/json",
+            			url: "http://127.0.0.1:5000/insertTRS",
+            			dataType: "json",
+            			data: result,
+            			success: function() {
+            				alert("Success");
+            				location.reload();
+            			},
+            			error: function() {
+            				console.log("Error");
+            			}
+					});
+				}
+			});
+		});
+	</script>
 
 <!-- END Shift Room for Sunject -->
 
 <!-- BEGIN Result -->
 	<script>
-		
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$.get("http://127.0.0.1:5000/getSubjects", function(data, status){
+				var data = JSON.parse(data);
+				data.forEach(function(dt){
+					txt += "<option id='subject' value='"+dt.id+"'>"+dt.code+"("+dt.name+")"+"</option>"
+				});
+				$("#sel1").html(txt);
+			});
+		});
 	</script>
-<!-- END REsult -->
+
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$("#sel1").change(function(){
+				var i = $("#sel1").val();
+				$.get("http://127.0.0.1:5000/timingOfSubjectAdmin", function(data, status){
+					var data = JSON.parse(data);
+					data.forEach(function(dt){
+						if (i == dt.subject_id){
+							txt += "<option id='shift' value='"+dt.timing_id+"'>"+dt.name+"("+dt.begin_time+" to "+dt.end_time+")"+"</option>";
+						};
+					});
+					$("#sel2").html(txt);
+				});
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+			var txt = "<option value='-1'>Choose</option>";
+			$("#sel1").change(function(){
+				var i = $("#sel1").val();
+				$("#sel2").change(function(){
+					var j = $("#sel2").val();
+					$.get("http://127.0.0.1:5000/roomOfTimingSubjectAdmin", function(data, status){
+						var data = JSON.parse(data);
+						data.forEach(function(dt){
+							if (i == dt.subject_id && j == dt.timing_id){
+								txt += "<option id='room' value='"+dt.id+"'>"+dt.name+"</option>";
+							};
+						});
+						$("#sel3").html(txt);
+					});
+				});
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function() {
+			$("#check").click(function() {
+				var i = $("#sel1").val();
+				var j = $("#sel2").val();
+				var k = $("#sel3").val();
+				if(i == -1){
+					alert("Please choose subject");
+				}
+				else if(j == -1){
+					alert("Please choose shift");
+				}
+				else if(k == -1){
+					alert("Please choose room");
+				}
+				else {
+					$.get("http://127.0.0.1:5000/registedAdmin", function(data, status){
+						var data = JSON.parse(data);
+						console.log(data);
+						var count = 1;
+						var txt ="";
+							data.forEach(function(dt){
+								txt += "<tr><td>"+count+"</td><td>"+dt.name+"</td><td>"+dt.date_of_birth+"</td></tr>";
+								count++;
+							});
+							$("#tdata4").html(txt);
+							$("#select").css("display", "none");
+							$("#list").removeAttr("style");
+
+					});
+				}
+			});
+		});
+	</script>
+
+	<script>
+		$(document).ready(function() {
+			$("#continue").click(function() {
+				location.reload();
+			});
+		});
+	</script>
+<!-- END Result -->
+
+<!-- BEGIN Save -->
+	<script>
+    	$(document).ready(function() {
+        	$('#save').click(function() {
+            	console.log('print');
+            	var printContents = $('#tb4').html();
+            	var originalContents = $('body').html();
+            	$('body').html(printContents);
+            	window.print();
+            	$('body').html(originalContents);
+        	});
+    	});
+	</script>
+<!-- END Save -->
 
 <!-- Keep selected tab page refresh -->
 	<script>

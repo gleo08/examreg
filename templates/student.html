@@ -124,7 +124,9 @@
 			$.get("http://127.0.0.1:5000/yourSubjects", function(data, status){
 				var data = JSON.parse(data);
 				data.forEach(function(dt){
-					txt += "<option id='subject' value='"+dt.id+"'>"+dt.code+"</option>";
+					if (dt.is_approved == 1){
+						txt += "<option id='subject' value='"+dt.id+"'>"+dt.code+"</option>";
+					}
 				});
 				$("#sel1").html(txt);
 			});
